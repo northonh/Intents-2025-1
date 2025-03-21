@@ -7,6 +7,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -17,6 +19,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val PARAMETER_REQUEST_CODE = 0
     }
+
+    private lateinit var parameterArl: ActivityResultLauncher<Intent>
 
     private val amb: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
@@ -33,9 +37,19 @@ class MainActivity : AppCompatActivity() {
             Intent(this, ParameterActivity::class.java).let {
                 // Colocando o valor na Intent que será enviada para a ParameterActivity
                 it.putExtra(PARAMETER_EXTRA, amb.parameterTv.text.toString())
-                startActivityForResult(it, PARAMETER_REQUEST_CODE)
+                parameterArl.launch(it)
             }
         }
+
+        parameterArl =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    // Recebendo o valor devolvido pela ParameterActivity
+                    result.data?.getStringExtra(PARAMETER_EXTRA).let {
+                        amb.parameterTv.text = it
+                    }
+                }
+            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -44,32 +58,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when(item.itemId) {
+        return when (item.itemId) {
             R.id.open_activity_mi -> {
                 Toast.makeText(this, "vc clicou no open", Toast.LENGTH_SHORT).show()
                 true
             }
-            R.id.view_mi -> { true }
-            R.id.call_mi -> { true }
-            R.id.dial_mi -> { true }
-            R.id.pick_mi -> { true }
-            R.id.chooser_mi -> { true }
-            else -> { false }
-        }
-    }
 
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-    ) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK) {
-            if (requestCode == PARAMETER_REQUEST_CODE) {
-                // Recebendo o valor devolvido pela ParameterActivity
-                data?.getStringExtra(PARAMETER_EXTRA).let {
-                    amb.parameterTv.text = it
-                }
+            R.id.view_mi -> {
+                true
+            }
+
+            R.id.call_mi -> {
+                true
+            }
+
+            R.id.dial_mi -> {
+                true
+            }
+
+            R.id.pick_mi -> {
+                true
+            }
+
+            R.id.chooser_mi -> {
+                true
+            }
+
+            else -> {
+                false
             }
         }
     }
