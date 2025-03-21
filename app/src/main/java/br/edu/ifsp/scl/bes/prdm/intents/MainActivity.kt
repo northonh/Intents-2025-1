@@ -1,7 +1,13 @@
 package br.edu.ifsp.scl.bes.prdm.intents
 
+import android.Manifest.permission.CALL_PHONE
 import android.app.ComponentCaller
 import android.content.Intent
+import android.content.Intent.ACTION_CALL
+import android.content.Intent.ACTION_VIEW
+import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -17,6 +23,7 @@ import br.edu.ifsp.scl.bes.prdm.intents.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var parameterArl: ActivityResultLauncher<Intent>
+    private lateinit var cppArl: ActivityResultLauncher<String>
 
     private val amb: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
@@ -47,6 +54,20 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
+        cppArl =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
+                if (permissionGranted) {
+                    // Chamar o número
+                    callPhone()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Permission required to call a number!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -62,10 +83,26 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.view_mi -> {
+                val url = Uri.parse(amb.parameterTv.text.toString())
+                val browserIntent = Intent(ACTION_VIEW, url)
+                startActivity(browserIntent)
                 true
             }
 
             R.id.call_mi -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                    if (checkSelfPermission(CALL_PHONE) == PERMISSION_GRANTED) {
+                        callPhone()
+                    }
+                    else {
+                        // Solicitar a permissão para o usuário
+                        cppArl.launch(CALL_PHONE)
+                    }
+                }
+                else {
+                    callPhone()
+                }
+
                 true
             }
 
@@ -85,5 +122,12 @@ class MainActivity : AppCompatActivity() {
                 false
             }
         }
+    }
+
+    private fun callPhone() {
+        val number = "tel: ${amb.parameterTv.text}"
+        val callIntent = Intent(ACTION_CALL)
+        callIntent.data = Uri.parse(number)
+        startActivity(callIntent)
     }
 }
