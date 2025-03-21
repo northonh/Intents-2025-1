@@ -16,10 +16,6 @@ import br.edu.ifsp.scl.bes.prdm.intents.Extras.PARAMETER_EXTRA
 import br.edu.ifsp.scl.bes.prdm.intents.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    companion object {
-        private const val PARAMETER_REQUEST_CODE = 0
-    }
-
     private lateinit var parameterArl: ActivityResultLauncher<Intent>
 
     private val amb: ActivityMainBinding by lazy {
@@ -33,8 +29,9 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.subtitle = localClassName
 
         amb.parameterBt.setOnClickListener {
-            // Intent explícita porque define a classe que será executada para tratar a Intent
-            Intent(this, ParameterActivity::class.java).let {
+            // Intent implícita porque não define a classe que será executada para tratar a Intent
+            // Deixa a cargo do SO escolher a Activity com base no IntentFilter
+            Intent("OPEN_PARAMETER_ACTIVITY_ACTION").let {
                 // Colocando o valor na Intent que será enviada para a ParameterActivity
                 it.putExtra(PARAMETER_EXTRA, amb.parameterTv.text.toString())
                 parameterArl.launch(it)
