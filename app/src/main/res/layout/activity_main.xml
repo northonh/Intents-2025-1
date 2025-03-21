@@ -18,10 +18,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/parameter_et"
+        android:id="@+id/parameter_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/parameter"
+        android:text="Initial value"
         android:textSize="25sp"
         android:layout_margin="5dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,6 +36,6 @@
         android:text="@string/open_activity_with_explicit_intent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/parameter_et" />
+        app:layout_constraintTop_toBottomOf="@id/parameter_tv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
